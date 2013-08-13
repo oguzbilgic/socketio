@@ -73,9 +73,9 @@ func Subscribe(ch chan<- string, url, channel string) {
 	heartbeatTimeout, _ := strconv.Atoi(bodyParts[1])
 	//connectionTimeout, _ := strconv.Atoi(bodyParts[2])
 	supportedProtocols := strings.Split(string(bodyParts[3]), ",")
-	
+
 	// Fail if websocket is not supported
-	for i := 0; i < len(supportedProtocols); i++{
+	for i := 0; i < len(supportedProtocols); i++ {
 		if supportedProtocols[i] == "websocket" {
 			break
 		} else if i == len(supportedProtocols)-1 {
@@ -83,7 +83,7 @@ func Subscribe(ch chan<- string, url, channel string) {
 		}
 	}
 
-	// Connect	
+	// Connect
 	ws, err := websocket.Dial("ws://"+url+"/websocket/"+sessionId, "", "http://localhost/")
 	if err != nil {
 		log.Fatal(err)
@@ -112,7 +112,7 @@ func Subscribe(ch chan<- string, url, channel string) {
 		if err := SocketIOCodec.Receive(ws, &msg); err != nil {
 			log.Fatal(err)
 		}
-		
+
 		// ignore emtpy data and handshakes
 		if len(msg) > 2 {
 			ch <- msg
