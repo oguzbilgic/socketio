@@ -12,8 +12,9 @@ func TestDisconnect(t *testing.T) {
 }
 
 func TestConnect(t *testing.T) {
-	m := NewConnect("/mtgox", "Currency=USD")
-	if m.String() != "1::/mtgox?Currency=USD" {
+	endpoint := NewEndpoint("/path", "Key=Value")
+	m := NewConnect(endpoint)
+	if m.String() != "1::/path?Key=Value" {
 		t.Errorf("Connect message string")
 	}
 }
@@ -26,8 +27,9 @@ func TestHeartbeat(t *testing.T) {
 }
 
 func TestMessage(t *testing.T) {
-	m := NewMessage("/mtgox", "Currency=USD", "This is a test message")
-	if m.String() != "3::/mtgox:This is a test message" {
+	endpoint := NewEndpoint("/path", "Key=Value")
+	m := NewMessage(endpoint, "This is a test message")
+	if m.String() != "3::/path?Key=Value:This is a test message" {
 		t.Errorf("Connect message string")
 	}
 }
