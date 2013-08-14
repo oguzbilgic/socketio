@@ -9,7 +9,7 @@ import (
 type Connection struct {
 	Session *Session
 	Channel string
-	Ws	*websocket.Conn
+	Ws      *websocket.Conn
 }
 
 func NewConnection(session *Session, channel string) *Connection {

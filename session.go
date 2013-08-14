@@ -9,7 +9,7 @@ import (
 )
 
 type Session struct {
-	Url string
+	Url                string
 	Id                 string
 	HeartbeatTimeout   int
 	ConnectionTimeout  int
