@@ -6,8 +6,7 @@ import (
 )
 
 func Subscribe(ch chan<- string, url, channel string) {
-	session := NewSession(url)
-	conn := NewConnection(session, channel)
+	conn := NewConnection(url, channel)
 
 	// Receive loop
 	var rawJsonMsg string

@@ -12,10 +12,11 @@ type Connection struct {
 	Ws      *websocket.Conn
 }
 
-func NewConnection(session *Session, channel string) *Connection {
+func NewConnection(url string, channel string) *Connection {
+	session := NewSession(url)
 
 	// Connect through websocket
-	ws, err := websocket.Dial("ws://"+session.Url+"/websocket/"+session.Id, "", "http://localhost/")
+	ws, err := websocket.Dial("ws://"+url+"/websocket/"+session.Id, "", "http://localhost/")
 	if err != nil {
 		log.Fatal(err)
 	}
