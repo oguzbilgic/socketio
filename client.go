@@ -1,7 +1,6 @@
 package socketio
 
 import (
-	"code.google.com/p/go.net/websocket"
 	"log"
 	"strings"
 )
@@ -14,7 +13,7 @@ func Subscribe(ch chan<- string, url, channel string) {
 	var rawJsonMsg string
 	for {
 		// Receive the message through websocket
-		if err := websocket.Message.Receive(conn.Ws, &rawJsonMsg); err != nil {
+		if err := conn.Receive(&rawJsonMsg); err != nil {
 			log.Fatal(err)
 		}
 

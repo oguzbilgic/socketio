@@ -37,3 +37,11 @@ func NewConnection(session *Session, channel string) *Connection {
 
 	return &Connection{session, channel, ws}
 }
+
+func (conn *Connection) Send(msg string) error {
+	return websocket.Message.Send(conn.Ws, msg)
+}
+
+func (conn *Connection) Receive(msg *string) error {
+	return websocket.Message.Receive(conn.Ws, msg)
+}
