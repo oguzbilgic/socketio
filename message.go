@@ -46,19 +46,15 @@ func (m IOMessage) String() string {
 	return raw
 }
 
-func Parse(raw string) *IOMessage {
-	return &IOMessage{}
-}
-
-type Disconnect IOMessage
-type Connect IOMessage
-type Heartbeat IOMessage
-type Message IOMessage
-type JSON IOMessage
-type Event IOMessage
-type ACK IOMessage
-type Error IOMessage
-type Noop IOMessage
+// type Disconnect IOMessage
+// type Connect IOMessage
+// type Heartbeat IOMessage
+// type Message IOMessage
+// type JSON IOMessage
+// type Event IOMessage
+// type ACK IOMessage
+// type Error IOMessage
+// type Noop IOMessage
 
 func NewDisconnect() *IOMessage {
 	return &IOMessage{Type: 0}
@@ -74,4 +70,8 @@ func NewHeartbeat() *IOMessage {
 
 func NewMessage(endpoint *IOEndpoint, data string) *IOMessage {
 	return &IOMessage{Type: 3, Endpoint: endpoint, Data: data}
+}
+
+func Parse(raw string) *IOMessage {
+	return &IOMessage{}
 }
