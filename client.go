@@ -2,10 +2,7 @@ package socketio
 
 import (
 	"code.google.com/p/go.net/websocket"
-	"io/ioutil"
 	"log"
-	"net/http"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -34,38 +31,10 @@ func socketIOUnmarshall(msg []byte, payloadType byte, v interface{}) (err error)
 }
 
 func Subscribe(ch chan<- string, url, channel string) {
-	// Initiate the session via http request
-	response, err := http.Get("http://" + url)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	body, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-	response.Body.Close()
-
-	// Extract the session configs from the response
-	sessionVars := strings.Split(string(body), ":")
-	sessionId := sessionVars[0]
-	heartbeatTimeout, _ := strconv.Atoi(sessionVars[1])
-	//connectionTimeout, _ := strconv.Atoi(sessionVars[2])
-	supportedProtocols := strings.Split(string(sessionVars[3]), ",")
-
-	// Fail if websocket is not supported by SocketIO server
-	for i, protocol := range supportedProtocols {
-		if protocol == "websocket" {
-			break
-		}
-
-		if  i == len(supportedProtocols)-1 {
-			log.Fatal("Websocket is not supported")
-		}
-	}
+	session := NewSession(url)
 
 	// Connect through websocket
-	ws, err := websocket.Dial("ws://"+url+"/websocket/"+sessionId, "", "http://localhost/")
+	ws, err := websocket.Dial("ws://"+url+"/websocket/"+session.Id, "", "http://localhost/")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -78,7 +47,7 @@ func Subscribe(ch chan<- string, url, channel string) {
 	// Send heartbeats periodically in a seperate goroutine
 	go func() {
 		for {
-			time.Sleep(time.Duration(heartbeatTimeout-1) * time.Second)
+			time.Sleep(time.Duration(session.HeartbeatTimeout-1) * time.Second)
 			if err := websocket.Message.Send(ws, "2::"); err != nil {
 				log.Fatal(err)
 			}

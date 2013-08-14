@@ -11,7 +11,7 @@ type IOMessage struct {
 	Data     string
 }
 
-func (m IOMessage) String() string {
+func (m IOMessage) Marshall() string {
 	raw := strconv.Itoa(m.Type)
 
 	raw += ":"
@@ -29,6 +29,10 @@ func (m IOMessage) String() string {
 	}
 
 	return raw
+}
+
+func Unmarshall(raw string) *IOMessage {
+	return &IOMessage{Type: 0}
 }
 
 // type Disconnect IOMessage
