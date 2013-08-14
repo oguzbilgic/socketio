@@ -6,7 +6,10 @@ import (
 )
 
 func Subscribe(ch chan<- string, url, channel string) {
-	conn := NewConnection(url, channel)
+	conn, err := NewConnection(url, channel)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Receive loop
 	var rawJsonMsg string

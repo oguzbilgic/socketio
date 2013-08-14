@@ -2,7 +2,6 @@ package socketio
 
 import (
 	"code.google.com/p/go.net/websocket"
-	"log"
 	"time"
 )
 
@@ -12,18 +11,21 @@ type Connection struct {
 	Ws      *websocket.Conn
 }
 
-func NewConnection(url string, channel string) *Connection {
-	session := NewSession(url)
+func NewConnection(url string, channel string) (*Connection, error) {
+	session, err := NewSession(url)
+	if err != nil {
+		return nil, err
+	}
 
 	// Connect through websocket
 	ws, err := websocket.Dial("ws://"+url+"/websocket/"+session.Id, "", "http://localhost/")
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	// Send initial handshake
 	if err := websocket.Message.Send(ws, "1::"+channel); err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	// Send heartbeats periodically in a seperate goroutine
@@ -31,12 +33,12 @@ func NewConnection(url string, channel string) *Connection {
 		for {
 			time.Sleep(time.Duration(session.HeartbeatTimeout-1) * time.Second)
 			if err := websocket.Message.Send(ws, "2::"); err != nil {
-				log.Fatal(err)
+				//return nil, err
 			}
 		}
 	}()
 
-	return &Connection{session, channel, ws}
+	return &Connection{session, channel, ws}, nil
 }
 
 func (conn *Connection) Send(msg string) error {

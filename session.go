@@ -2,7 +2,6 @@ package socketio
 
 import (
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -16,17 +15,17 @@ type Session struct {
 	SupportedProtocols []string
 }
 
-func NewSession(url string) *Session {
+func NewSession(url string) (*Session, error) {
 	// Initiate the session via http request
 	response, err := http.Get("http://" + url)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	// Read the response
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	response.Body.Close()
 
@@ -37,5 +36,5 @@ func NewSession(url string) *Session {
 	connectionTimeout, _ := strconv.Atoi(sessionVars[2])
 	supportedProtocols := strings.Split(string(sessionVars[3]), ",")
 
-	return &Session{url, id, heartbeatTimeout, connectionTimeout, supportedProtocols}
+	return &Session{url, id, heartbeatTimeout, connectionTimeout, supportedProtocols}, nil
 }
