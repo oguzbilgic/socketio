@@ -4,7 +4,6 @@ import (
 	"code.google.com/p/go.net/websocket"
 	"log"
 	"strings"
-	"time"
 )
 
 func socketIOMarshall(v interface{}) (msg []byte, payloadType byte, err error) {
@@ -32,34 +31,14 @@ func socketIOUnmarshall(msg []byte, payloadType byte, v interface{}) (err error)
 
 func Subscribe(ch chan<- string, url, channel string) {
 	session := NewSession(url)
-
-	// Connect through websocket
-	ws, err := websocket.Dial("ws://"+url+"/websocket/"+session.Id, "", "http://localhost/")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Send initial handshake
-	if err := websocket.Message.Send(ws, "1::"+channel); err != nil {
-		log.Fatal(err)
-	}
-
-	// Send heartbeats periodically in a seperate goroutine
-	go func() {
-		for {
-			time.Sleep(time.Duration(session.HeartbeatTimeout-1) * time.Second)
-			if err := websocket.Message.Send(ws, "2::"); err != nil {
-				log.Fatal(err)
-			}
-		}
-	}()
+	conn := NewConnection(session, channel)
 
 	// Receive loop
 	var rawJsonMsg string
 	var SocketIOCodec = websocket.Codec{socketIOMarshall, socketIOUnmarshall}
 	for {
 		// Receive the message through websocket and remove socketio headers
-		if err := SocketIOCodec.Receive(ws, &rawJsonMsg); err != nil {
+		if err := SocketIOCodec.Receive(conn.Ws, &rawJsonMsg); err != nil {
 			log.Fatal(err)
 		}
 

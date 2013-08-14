@@ -2,16 +2,17 @@ package socketio
 
 import (
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
-	"log"
 )
 
 type Session struct {
-	Id string
-	HeartbeatTimeout int
-	ConnectionTimeout int
+	Url string
+	Id                 string
+	HeartbeatTimeout   int
+	ConnectionTimeout  int
 	SupportedProtocols []string
 }
 
@@ -32,6 +33,7 @@ func NewSession(url string) *Session {
 
 	// Extract the session configs from the response
 	sessionVars := strings.Split(string(body), ":")
+	s.Url = url
 	s.Id = sessionVars[0]
 	s.HeartbeatTimeout, _ = strconv.Atoi(sessionVars[1])
 	s.ConnectionTimeout, _ = strconv.Atoi(sessionVars[2])
@@ -47,6 +49,6 @@ func NewSession(url string) *Session {
 			log.Fatal("Websocket is not supported")
 		}
 	}
- 	
+
 	return s
 }
