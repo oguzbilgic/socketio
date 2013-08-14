@@ -14,8 +14,6 @@ func socketIOMarshall(v interface{}) (msg []byte, payloadType byte, err error) {
 	switch data := v.(type) {
 	case string:
 		return []byte(data), websocket.TextFrame, nil
-	case []byte:
-		return data, websocket.BinaryFrame, nil
 	}
 	return nil, websocket.UnknownFrame, websocket.ErrNotSupported
 }
@@ -35,66 +33,50 @@ func socketIOUnmarshall(msg []byte, payloadType byte, v interface{}) (err error)
 	return websocket.ErrNotSupported
 }
 
-/*
-
-Socket-io Protocol
-
-GET /socket.io/1 HTTP/1.1
-Host: socketio.mtgox.com
-Connection: keep-alive
-Origin: null
-
-GET /socket.io/1/websocket/[SESSION-ID] HTTP/1.1
-Pragma: no-cache
-Origin: null
-Host: socketio.mtgox.com
-Upgrade: websocket
-Cache-Control: no-cache
-Connection: Upgrade
-
-Websocket Protocol
-
-GET /mtgox?Currency=USD HTTP/1.1
-Host: mtgox.mtgox.com
-Upgrade: websocket
-Connection: Upgrade
-Connection: keep-alive
-Origin: http://localhost/
-
-*/
 func Subscribe(ch chan<- string, url, channel string) {
-	// Handshake Request
-	resp, _ := http.Get("http://" + url)
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	bodyParts := strings.Split(string(body), ":")
-	// Agreed configs
-	sessionId := bodyParts[0]
-	heartbeatTimeout, _ := strconv.Atoi(bodyParts[1])
-	//connectionTimeout, _ := strconv.Atoi(bodyParts[2])
-	supportedProtocols := strings.Split(string(bodyParts[3]), ",")
+	// Initiate the session via http request
+	response, err := http.Get("http://" + url)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer response.Body.Close()
 
-	// Fail if websocket is not supported
-	for i := 0; i < len(supportedProtocols); i++ {
-		if supportedProtocols[i] == "websocket" {
+	// Extract the session configs from the response
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Record the session variables
+	sessionVars := strings.Split(string(body), ":")
+	sessionId := sessionVars[0]
+	heartbeatTimeout, _ := strconv.Atoi(sessionVars[1])
+	//connectionTimeout, _ := strconv.Atoi(sessionVars[2])
+	supportedProtocols := strings.Split(string(sessionVars[3]), ",")
+
+	// Fail if websocket is not supported by SocketIO server
+	for i, protocol := range supportedProtocols {
+		if protocol == "websocket" {
 			break
-		} else if i == len(supportedProtocols)-1 {
+		}
+
+		if  i == len(supportedProtocols)-1 {
 			log.Fatal("Websocket is not supported")
 		}
 	}
 
-	// Connect
+	// Connect through websocket
 	ws, err := websocket.Dial("ws://"+url+"/websocket/"+sessionId, "", "http://localhost/")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Initial handshake
+	// Send initial handshake
 	if err := websocket.Message.Send(ws, "1::"+channel); err != nil {
 		log.Fatal(err)
 	}
 
-	// Send heartbeat in agreed timeout perios
+	// Send heartbeats periodically in a seperate goroutine
 	go func() {
 		for {
 			time.Sleep(time.Duration(heartbeatTimeout-1) * time.Second)
@@ -105,17 +87,17 @@ func Subscribe(ch chan<- string, url, channel string) {
 	}()
 
 	// Receive loop
-	var msg string
+	var rawJsonMsg string
 	var SocketIOCodec = websocket.Codec{socketIOMarshall, socketIOUnmarshall}
 	for {
-		// Remove socketio headers
-		if err := SocketIOCodec.Receive(ws, &msg); err != nil {
+		// Receive the message through websocket and remove socketio headers
+		if err := SocketIOCodec.Receive(ws, &rawJsonMsg); err != nil {
 			log.Fatal(err)
 		}
 
 		// ignore emtpy data and handshakes
-		if len(msg) > 2 {
-			ch <- msg
+		if len(rawJsonMsg) > 2 {
+			ch <- rawJsonMsg
 		}
 	}
 }

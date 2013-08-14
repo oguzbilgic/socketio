@@ -28,8 +28,9 @@ type IOMessage struct {
 }
 
 func (m IOMessage) String() string {
-	raw := strconv.Itoa(m.Type) + ":"
+	raw := strconv.Itoa(m.Type)
 
+	raw += ":"
 	if m.Id != 0 {
 		raw += strconv.Itoa(m.Id)
 	}
@@ -70,8 +71,4 @@ func NewHeartbeat() *IOMessage {
 
 func NewMessage(endpoint *IOEndpoint, data string) *IOMessage {
 	return &IOMessage{Type: 3, Endpoint: endpoint, Data: data}
-}
-
-func Parse(raw string) *IOMessage {
-	return &IOMessage{}
 }
