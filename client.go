@@ -39,15 +39,14 @@ func Subscribe(ch chan<- string, url, channel string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer response.Body.Close()
 
-	// Extract the session configs from the response
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
+	response.Body.Close()
 
-	// Record the session variables
+	// Extract the session configs from the response
 	sessionVars := strings.Split(string(body), ":")
 	sessionId := sessionVars[0]
 	heartbeatTimeout, _ := strconv.Atoi(sessionVars[1])
