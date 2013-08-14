@@ -17,14 +17,13 @@ type Session struct {
 }
 
 func NewSession(url string) *Session {
-	s := new(Session)
-
 	// Initiate the session via http request
 	response, err := http.Get("http://" + url)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// Read the response
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		log.Fatal(err)
@@ -33,22 +32,10 @@ func NewSession(url string) *Session {
 
 	// Extract the session configs from the response
 	sessionVars := strings.Split(string(body), ":")
-	s.Url = url
-	s.Id = sessionVars[0]
-	s.HeartbeatTimeout, _ = strconv.Atoi(sessionVars[1])
-	s.ConnectionTimeout, _ = strconv.Atoi(sessionVars[2])
-	s.SupportedProtocols = strings.Split(string(sessionVars[3]), ",")
+	id := sessionVars[0]
+	heartbeatTimeout, _ := strconv.Atoi(sessionVars[1])
+	connectionTimeout, _ := strconv.Atoi(sessionVars[2])
+	supportedProtocols := strings.Split(string(sessionVars[3]), ",")
 
-	// Fail if websocket is not supported by SocketIO server
-	for i, protocol := range s.SupportedProtocols {
-		if protocol == "websocket" {
-			break
-		}
-
-		if i == len(s.SupportedProtocols)-1 {
-			log.Fatal("Websocket is not supported")
-		}
-	}
-
-	return s
+	return &Session{url, id, heartbeatTimeout, connectionTimeout, supportedProtocols}
 }
