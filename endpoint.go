@@ -1,15 +1,15 @@
 package socketio
 
-type IOEndpoint struct {
+type Endpoint struct {
 	Path  string
 	Query string
 }
 
-func NewEndpoint(path, query string) *IOEndpoint {
-	return &IOEndpoint{Path: path, Query: query}
+func NewEndpoint(path, query string) *Endpoint {
+	return &Endpoint{path, query}
 }
 
-func (e IOEndpoint) String() string {
+func (e Endpoint) String() string {
 	if e.Query != "" {
 		return e.Path + "?" + e.Query
 	}

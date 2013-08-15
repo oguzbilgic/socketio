@@ -7,7 +7,7 @@ import (
 type IOMessage struct {
 	Type     int
 	Id       int
-	Endpoint *IOEndpoint
+	Endpoint *Endpoint
 	Data     string
 }
 
@@ -49,7 +49,7 @@ func NewDisconnect() *IOMessage {
 	return &IOMessage{Type: 0}
 }
 
-func NewConnect(endpoint *IOEndpoint) *IOMessage {
+func NewConnect(endpoint *Endpoint) *IOMessage {
 	return &IOMessage{Type: 1, Endpoint: endpoint}
 }
 
@@ -57,23 +57,23 @@ func NewHeartbeat() *IOMessage {
 	return &IOMessage{Type: 2}
 }
 
-func NewMessage(endpoint *IOEndpoint, data string) *IOMessage {
+func NewMessage(endpoint *Endpoint, data string) *IOMessage {
 	return &IOMessage{Type: 3, Endpoint: endpoint, Data: data}
 }
 
-func NewJSONMessage(endpoint *IOEndpoint, data string) *IOMessage {
+func NewJSONMessage(endpoint *Endpoint, data string) *IOMessage {
 	return &IOMessage{Type: 4, Endpoint: endpoint, Data: data}
 }
 
-func NewEvent(endpoint *IOEndpoint, data string) *IOMessage {
+func NewEvent(endpoint *Endpoint, data string) *IOMessage {
 	return &IOMessage{Type: 5, Endpoint: endpoint, Data: data}
 }
 
-func NewACK(endpoint *IOEndpoint, data string) *IOMessage {
+func NewACK(endpoint *Endpoint, data string) *IOMessage {
 	return &IOMessage{Type: 6, Endpoint: endpoint, Data: data}
 }
 
-func NewError(endpoint *IOEndpoint, data string) *IOMessage {
+func NewError(endpoint *Endpoint, data string) *IOMessage {
 	return &IOMessage{Type: 7, Endpoint: endpoint, Data: data}
 }
 
