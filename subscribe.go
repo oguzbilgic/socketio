@@ -20,7 +20,7 @@ func Subscribe(ch chan<- string, url, channel string) {
 		}
 
 		// Remove the socketio message headers
-		rawJsonMsg := strings.TrimLeftFunc(rawJsonMsg, func(r rune) bool {
+		rawJsonMsg = strings.TrimLeftFunc(rawJsonMsg, func(r rune) bool {
 			if r == '{' {
 				return false
 			}

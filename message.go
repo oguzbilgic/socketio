@@ -60,3 +60,23 @@ func NewHeartbeat() *IOMessage {
 func NewMessage(endpoint *IOEndpoint, data string) *IOMessage {
 	return &IOMessage{Type: 3, Endpoint: endpoint, Data: data}
 }
+
+func NewJSONMessage(endpoint *IOEndpoint, data string) *IOMessage {
+	return &IOMessage{Type: 4, Endpoint: endpoint, Data: data}
+}
+
+func NewEvent(endpoint *IOEndpoint, data string) *IOMessage {
+	return &IOMessage{Type: 5, Endpoint: endpoint, Data: data}
+}
+
+func NewACK(endpoint *IOEndpoint, data string) *IOMessage {
+	return &IOMessage{Type: 6, Endpoint: endpoint, Data: data}
+}
+
+func NewError(endpoint *IOEndpoint, data string) *IOMessage {
+	return &IOMessage{Type: 7, Endpoint: endpoint, Data: data}
+}
+
+func NewNoop() *IOMessage {
+	return &IOMessage{Type: 8}
+}

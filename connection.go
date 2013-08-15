@@ -1,14 +1,9 @@
 package socketio
 
-import (
-	"code.google.com/p/go.net/websocket"
-	"time"
-)
-
 type Connection struct {
-	Session *Session
-	Channel string
-	Ws      *websocket.Conn
+	Channel   string
+	Session   *Session
+	Transport *Transport
 }
 
 func NewConnection(url string, channel string) (*Connection, error) {
@@ -17,14 +12,13 @@ func NewConnection(url string, channel string) (*Connection, error) {
 		return nil, err
 	}
 
-	// Connect through websocket
-	ws, err := websocket.Dial("ws://"+url+"/websocket/"+session.Id, "", "http://localhost/")
+	transport, err := NewTransport(session, channel)
 	if err != nil {
 		return nil, err
 	}
 
 	// Send initial handshake
-	if err := websocket.Message.Send(ws, "1::"+channel); err != nil {
+	if err := transport.Send("1::" + channel); err != nil {
 		return nil, err
 	}
 
@@ -32,19 +26,19 @@ func NewConnection(url string, channel string) (*Connection, error) {
 	go func() {
 		for {
 			time.Sleep(time.Duration(session.HeartbeatTimeout-1) * time.Second)
-			if err := websocket.Message.Send(ws, "2::"); err != nil {
-				//return nil, err
+			if err := transport.Send("2::"); err != nil {
+				break
 			}
 		}
 	}()
 
-	return &Connection{session, channel, ws}, nil
+	return &Connection{channel, session, transport}, nil
 }
 
 func (conn *Connection) Send(msg string) error {
-	return websocket.Message.Send(conn.Ws, msg)
+	return conn.Transport.Send(msg)
 }
 
 func (conn *Connection) Receive(msg *string) error {
-	return websocket.Message.Receive(conn.Ws, msg)
+	return conn.Transport.Receive(msg)
 }
