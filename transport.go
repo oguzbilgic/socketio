@@ -2,7 +2,6 @@ package socketio
 
 import (
 	"code.google.com/p/go.net/websocket"
-	"time"
 )
 
 type Transport struct {
