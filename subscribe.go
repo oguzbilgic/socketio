@@ -6,7 +6,7 @@ import (
 )
 
 func Subscribe(ch chan<- string, url, channel string) {
-	conn, err := NewConnection(url, channel)
+	socket, err := NewSocket(url, channel)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -15,7 +15,7 @@ func Subscribe(ch chan<- string, url, channel string) {
 	var rawJsonMsg string
 	for {
 		// Receive the message through websocket
-		if err := conn.Receive(&rawJsonMsg); err != nil {
+		if err := socket.Receive(&rawJsonMsg); err != nil {
 			log.Fatal(err)
 		}
 
