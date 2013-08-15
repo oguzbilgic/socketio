@@ -8,9 +8,9 @@ type Transport struct {
 	Conn *websocket.Conn
 }
 
-func NewTransport(session *Session, channel string) (*Transport, error) {
+func NewTransport(session *Session, url, channel string) (*Transport, error) {
 	// Connect through websocket
-	ws, err := websocket.Dial("ws://"+session.Url+"/websocket/"+session.Id, "", "http://localhost/")
+	ws, err := websocket.Dial("ws://"+url+"/websocket/"+session.Id, "", "http://localhost/")
 	if err != nil {
 		return nil, err
 	}

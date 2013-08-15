@@ -3,6 +3,7 @@ package socketio
 import "time"
 
 type Socket struct {
+	Url       string
 	Channel   string
 	Session   *Session
 	Transport *Transport
@@ -14,12 +15,12 @@ func NewSocket(url string, channel string) (*Socket, error) {
 		return nil, err
 	}
 
-	transport, err := NewTransport(session, channel)
+	transport, err := NewTransport(session, url, channel)
 	if err != nil {
 		return nil, err
 	}
 
-	socket := &Socket{channel, session, transport}
+	socket := &Socket{url, channel, session, transport}
 	socket.handshake()
 	go socket.heartbeat()
 

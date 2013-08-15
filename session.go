@@ -8,7 +8,6 @@ import (
 )
 
 type Session struct {
-	Url                string
 	Id                 string
 	HeartbeatTimeout   int
 	ConnectionTimeout  int
@@ -36,5 +35,5 @@ func NewSession(url string) (*Session, error) {
 	connectionTimeout, _ := strconv.Atoi(sessionVars[2])
 	supportedProtocols := strings.Split(string(sessionVars[3]), ",")
 
-	return &Session{url, id, heartbeatTimeout, connectionTimeout, supportedProtocols}, nil
+	return &Session{id, heartbeatTimeout, connectionTimeout, supportedProtocols}, nil
 }
