@@ -10,7 +10,7 @@ type Transport struct {
 
 func NewTransport(session *Session, url, channel string) (*Transport, error) {
 	// Connect through websocket
-	ws, err := websocket.Dial("ws://"+url+"/websocket/"+session.Id, "", "http://localhost/")
+	ws, err := websocket.Dial("ws://"+url+"/socket.io/1/websocket/"+session.Id, "", "http://localhost/")
 	if err != nil {
 		return nil, err
 	}
