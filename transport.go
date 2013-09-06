@@ -4,27 +4,32 @@ import (
 	"code.google.com/p/go.net/websocket"
 )
 
-type Transport struct {
+type Transport interface {
+	Send(*IOMessage) error
+	Receive() (*IOMessage, error)
+}
+
+type WSTransport struct {
 	Conn *websocket.Conn
 }
 
-func NewTransport(session *Session, url, channel string) (*Transport, error) {
+func NewWSTransport(session *Session, url, channel string) (*WSTransport, error) {
 	// Connect through websocket
 	ws, err := websocket.Dial("ws://"+url+"/socket.io/1/websocket/"+session.Id, "", "http://localhost/")
 	if err != nil {
 		return nil, err
 	}
 
-	return &Transport{ws}, nil
+	return &WSTransport{ws}, nil
 }
 
-func (transport *Transport) Send(msg *IOMessage) error {
-	return websocket.Message.Send(transport.Conn, msg.String())
+func (wsTransport *WSTransport) Send(msg *IOMessage) error {
+	return websocket.Message.Send(wsTransport.Conn, msg.String())
 }
 
-func (transport *Transport) Receive() (*IOMessage, error) {
+func (wsTransport *WSTransport) Receive() (*IOMessage, error) {
 	var rawMsg string
-	err := websocket.Message.Receive(transport.Conn, &rawMsg)
+	err := websocket.Message.Receive(wsTransport.Conn, &rawMsg)
 	if err != nil {
 		return nil, err
 	}

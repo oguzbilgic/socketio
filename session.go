@@ -16,7 +16,7 @@ type Session struct {
 
 func NewSession(url string) (*Session, error) {
 	// Initiate the session via http request
-	response, err := http.Get("http://" + url+"/socket.io/1")
+	response, err := http.Get("http://" + url + "/socket.io/1")
 	if err != nil {
 		return nil, err
 	}

@@ -15,7 +15,7 @@ type Socket struct {
 	Url       string
 	Channel   string
 	Session   *Session
-	Transport *Transport
+	Transport Transport
 }
 
 func Dial(url string, channel string) (*Socket, error) {
@@ -24,7 +24,7 @@ func Dial(url string, channel string) (*Socket, error) {
 		return nil, err
 	}
 
-	transport, err := NewTransport(session, url, channel)
+	transport, err := NewWSTransport(session, url, channel)
 	if err != nil {
 		return nil, err
 	}
@@ -48,16 +48,15 @@ func Dial(url string, channel string) (*Socket, error) {
 
 func (socket *Socket) Receive() (*IOMessage, error) {
 Begining:
-  msg, err := socket.Transport.Receive()
-  if err != nil {
-    return nil, err
-  }
+	msg, err := socket.Transport.Receive()
+	if err != nil {
+		return nil, err
+	}
 
-  switch msg.Type {
-  case 3, 5:
-    return msg, nil
-  default:
-    goto Begining
-  }
+	switch msg.Type {
+	case 3, 5:
+		return msg, nil
+	default:
+		goto Begining
+	}
 }
-
