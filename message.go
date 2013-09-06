@@ -8,7 +8,7 @@ import (
 
 type IOMessage struct {
 	Type     int
-	Id       int
+	Id       string
 	Endpoint *Endpoint
 	Data     string
 }
@@ -26,12 +26,7 @@ func NewIOMessage(rawMsg string) (*IOMessage, error) {
 	switch msgType {
 	case 3, 4, 5:
 		parts := strings.SplitN(rawMsg, ":", 4)
-
-		id, err := strconv.Atoi(parts[1])
-		if err != nil {
-			return nil, err
-		}
-
+		id := parts[1]
 		return &IOMessage{msgType, id, nil, parts[3]}, nil
 	default:
 		return &IOMessage{Type: msgType}, nil
@@ -41,10 +36,7 @@ func NewIOMessage(rawMsg string) (*IOMessage, error) {
 func (m IOMessage) String() string {
 	raw := strconv.Itoa(m.Type)
 
-	raw += ":"
-	if m.Id != 0 {
-		raw += strconv.Itoa(m.Id)
-	}
+	raw += ":" + m.Id
 
 	raw += ":"
 	if m.Endpoint != nil {
