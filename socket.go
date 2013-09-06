@@ -55,15 +55,19 @@ func NewSocket(url string, channel string) (*Socket, error) {
 	return &Socket{url, channel, session, transport, nil, nil, nil}, nil
 }
 
+// TODO: Mux and Demux multiple channels on same transport and socket
 func (socket *Socket) Dial() {
-	// Handshake
-	socket.Transport.Send("1::" + socket.Channel)
+	// Connect
+	endpoint := NewEndpoint(socket.Channel, "")
+	connectMsg := NewConnect(endpoint)
+	socket.Transport.Send(connectMsg)
 
 	// Heartbeat goroutine
 	go func() {
+		heartbeatMsg := NewHeartbeat()
 		for {
 			time.Sleep(time.Duration(socket.Session.HeartbeatTimeout-1) * time.Second)
-			_ = socket.Transport.Send("2::")
+			_ = socket.Transport.Send(heartbeatMsg)
 		}
 	}()
 
@@ -91,7 +95,7 @@ func (socket *Socket) Dial() {
 				go onEventFunc(event.Name, event.Args)
 			}
 		default:
-			println(msg.Type)
+			println("Received a message " + string(msg.Type))
 		}
 	}
 }
@@ -106,8 +110,4 @@ func (socket *Socket) OnJSON(ojf OnJSONFunc) {
 
 func (socket *Socket) OnEvent(oef OnEventFunc) {
 	socket.OnEventFuncs = append(socket.OnEventFuncs, oef)
-}
-
-func (socket *Socket) Send(msg string) error {
-	return socket.Transport.Send(msg)
 }

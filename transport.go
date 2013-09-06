@@ -18,13 +18,16 @@ func NewTransport(session *Session, url, channel string) (*Transport, error) {
 	return &Transport{ws}, nil
 }
 
-func (transport *Transport) Send(msg string) error {
-	return websocket.Message.Send(transport.Conn, msg)
+func (transport *Transport) Send(msg *IOMessage) error {
+	return websocket.Message.Send(transport.Conn, msg.String())
 }
 
 func (transport *Transport) Receive() (*IOMessage, error) {
 	var rawMsg string
-	websocket.Message.Receive(transport.Conn, &rawMsg)
+	err := websocket.Message.Receive(transport.Conn, &rawMsg)
+	if err != nil {
+		return nil, err
+	}
 
 	msg, err := NewIOMessage(rawMsg)
 	if err != nil {
