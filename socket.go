@@ -32,14 +32,14 @@ func Dial(url string, channel string) (*Socket, error) {
 	// Connect
 	endpoint := NewEndpoint(channel, "")
 	connectMsg := NewConnect(endpoint)
-	transport.Send(connectMsg)
+	transport.send(connectMsg)
 
 	// Heartbeat goroutine
 	go func() {
 		heartbeatMsg := NewHeartbeat()
 		for {
 			time.Sleep(time.Duration(session.HeartbeatTimeout-1) * time.Second)
-			_ = transport.Send(heartbeatMsg)
+			_ = transport.send(heartbeatMsg)
 		}
 	}()
 
@@ -47,16 +47,9 @@ func Dial(url string, channel string) (*Socket, error) {
 }
 
 func (socket *Socket) Receive() (*IOMessage, error) {
-Begining:
-	msg, err := socket.Transport.Receive()
-	if err != nil {
-		return nil, err
-	}
+	return socket.Transport.receive()
+}
 
-	switch msg.Type {
-	case 3, 5:
-		return msg, nil
-	default:
-		goto Begining
-	}
+func (socket *Socket) Send(msg *IOMessage) error {
+	return socket.Transport.send(msg)
 }

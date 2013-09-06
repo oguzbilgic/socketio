@@ -5,8 +5,8 @@ import (
 )
 
 type Transport interface {
-	Send(*IOMessage) error
-	Receive() (*IOMessage, error)
+	send(*IOMessage) error
+	receive() (*IOMessage, error)
 }
 
 type WSTransport struct {
@@ -23,11 +23,11 @@ func NewWSTransport(session *Session, url, channel string) (*WSTransport, error)
 	return &WSTransport{ws}, nil
 }
 
-func (wsTransport *WSTransport) Send(msg *IOMessage) error {
+func (wsTransport *WSTransport) send(msg *IOMessage) error {
 	return websocket.Message.Send(wsTransport.Conn, msg.String())
 }
 
-func (wsTransport *WSTransport) Receive() (*IOMessage, error) {
+func (wsTransport *WSTransport) receive() (*IOMessage, error) {
 	var rawMsg string
 	err := websocket.Message.Receive(wsTransport.Conn, &rawMsg)
 	if err != nil {
