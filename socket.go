@@ -3,7 +3,6 @@
 package socketio
 
 import (
-	"encoding/json"
 	"time"
 )
 
@@ -17,31 +16,9 @@ type Socket struct {
 	Channel   string
 	Session   *Session
 	Transport *Transport
-
-	OnMessageFuncs []OnMessageFunc
-	OnEventFuncs   []OnEventFunc
-	OnJSONFuncs    []OnJSONFunc
 }
 
-type OnDisconnectFunc func(channel string)
-
-type OnConnectFunc func(endpoint Endpoint)
-
-type OnHeartbeatFunc func()
-
-type OnMessageFunc func(msg string)
-
-type OnEventFunc func(event string, args interface{})
-
-type OnJSONFunc func(jsonStr string)
-
-type OnACKFunc func(id string, data string)
-
-type OnErrorFunc func(channel, reason, advice string)
-
-type OnNoopFunc func()
-
-func NewSocket(url string, channel string) (*Socket, error) {
+func Dial(url string, channel string) (*Socket, error) {
 	session, err := NewSession(url)
 	if err != nil {
 		return nil, err
@@ -52,62 +29,35 @@ func NewSocket(url string, channel string) (*Socket, error) {
 		return nil, err
 	}
 
-	return &Socket{url, channel, session, transport, nil, nil, nil}, nil
-}
-
-// TODO: Mux and Demux multiple channels on same transport and socket
-func (socket *Socket) Dial() {
 	// Connect
-	endpoint := NewEndpoint(socket.Channel, "")
+	endpoint := NewEndpoint(channel, "")
 	connectMsg := NewConnect(endpoint)
-	socket.Transport.Send(connectMsg)
+	transport.Send(connectMsg)
 
 	// Heartbeat goroutine
 	go func() {
 		heartbeatMsg := NewHeartbeat()
 		for {
-			time.Sleep(time.Duration(socket.Session.HeartbeatTimeout-1) * time.Second)
-			_ = socket.Transport.Send(heartbeatMsg)
+			time.Sleep(time.Duration(session.HeartbeatTimeout-1) * time.Second)
+			_ = transport.Send(heartbeatMsg)
 		}
 	}()
 
-	// Message receiving loop
-	for {
-		msg, err := socket.Transport.Receive()
-		if err != nil {
-			println(err.Error())
-			continue
-		}
-
-		switch msg.Type {
-		case 3:
-			for _, onMessageFunc := range socket.OnMessageFuncs {
-				go onMessageFunc(msg.Data)
-			}
-		case 5:
-			var event Event
-			err := json.Unmarshal([]byte(msg.Data), &event)
-			if err != nil {
-				panic(err)
-			}
-
-			for _, onEventFunc := range socket.OnEventFuncs {
-				go onEventFunc(event.Name, event.Args)
-			}
-		default:
-			println("Received a message " + string(msg.Type))
-		}
-	}
+	return &Socket{url, channel, session, transport}, nil
 }
 
-func (socket *Socket) OnMessage(omf OnMessageFunc) {
-	socket.OnMessageFuncs = append(socket.OnMessageFuncs, omf)
+func (socket *Socket) Receive() (*IOMessage, error) {
+Begining:
+  msg, err := socket.Transport.Receive()
+  if err != nil {
+    return nil, err
+  }
+
+  switch msg.Type {
+  case 3, 5:
+    return msg, nil
+  default:
+    goto Begining
+  }
 }
 
-func (socket *Socket) OnJSON(ojf OnJSONFunc) {
-	socket.OnJSONFuncs = append(socket.OnJSONFuncs, ojf)
-}
-
-func (socket *Socket) OnEvent(oef OnEventFunc) {
-	socket.OnEventFuncs = append(socket.OnEventFuncs, oef)
-}
