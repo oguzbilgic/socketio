@@ -4,7 +4,6 @@ package socketio
 
 import (
 	"encoding/json"
-	"strings"
 	"time"
 )
 
@@ -70,25 +69,20 @@ func (socket *Socket) Dial() {
 
 	// Message receiving loop
 	for {
-		var msg string
-		socket.Receive(&msg)
+		msg, err := socket.Transport.Receive()
+		if err != nil {
+			println(err.Error())
+			continue
+		}
 
-		msgCode := string(msg[0])
-
-		switch msgCode {
-		case "3":
-			msgParts := strings.SplitN(msg, ":", 4)
-			msgData := msgParts[3]
-
+		switch msg.Type {
+		case 3:
 			for _, onMessageFunc := range socket.OnMessageFuncs {
-				go onMessageFunc(msgData)
+				go onMessageFunc(msg.Data)
 			}
-		case "5":
-			msgParts := strings.SplitN(msg, ":", 4)
-			msgData := msgParts[3]
-
+		case 5:
 			var event Event
-			err := json.Unmarshal([]byte(msgData), &event)
+			err := json.Unmarshal([]byte(msg.Data), &event)
 			if err != nil {
 				panic(err)
 			}
@@ -97,7 +91,7 @@ func (socket *Socket) Dial() {
 				go onEventFunc(event.Name, event.Args)
 			}
 		default:
-			println(msg)
+			println(msg.Type)
 		}
 	}
 }
@@ -116,8 +110,4 @@ func (socket *Socket) OnEvent(oef OnEventFunc) {
 
 func (socket *Socket) Send(msg string) error {
 	return socket.Transport.Send(msg)
-}
-
-func (socket *Socket) Receive(msg *string) error {
-	return socket.Transport.Receive(msg)
 }

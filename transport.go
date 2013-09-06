@@ -22,6 +22,14 @@ func (transport *Transport) Send(msg string) error {
 	return websocket.Message.Send(transport.Conn, msg)
 }
 
-func (transport *Transport) Receive(msg *string) error {
-	return websocket.Message.Receive(transport.Conn, msg)
+func (transport *Transport) Receive() (*IOMessage, error) {
+	var rawMsg string
+	websocket.Message.Receive(transport.Conn, &rawMsg)
+
+	msg, err := NewIOMessage(rawMsg)
+	if err != nil {
+		return nil, err
+	}
+
+	return msg, nil
 }
