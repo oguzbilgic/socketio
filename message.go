@@ -1,7 +1,9 @@
 package socketio
 
 import (
+	"errors"
 	"strconv"
+	"strings"
 )
 
 type IOMessage struct {
@@ -11,7 +13,32 @@ type IOMessage struct {
 	Data     string
 }
 
-func (m IOMessage) Marshall() string {
+func NewIOMessage(rawMsg string) (*IOMessage, error) {
+	if len(rawMsg) == 0 {
+		return nil, errors.New("Empty message")
+	}
+
+	msgType, err := strconv.Atoi(string(rawMsg[0]))
+	if err != nil {
+		return nil, err
+	}
+
+	switch msgType {
+	case 3, 4, 5:
+		parts := strings.SplitN(rawMsg, ":", 4)
+
+		id, err := strconv.Atoi(parts[1])
+		if err != nil {
+			return nil, err
+		}
+
+		return &IOMessage{msgType, id, nil, parts[3]}, nil
+	default:
+		return &IOMessage{Type: msgType}, nil
+	}
+}
+
+func (m IOMessage) String() string {
 	raw := strconv.Itoa(m.Type)
 
 	raw += ":"
@@ -30,20 +57,6 @@ func (m IOMessage) Marshall() string {
 
 	return raw
 }
-
-func Unmarshall(raw string) *IOMessage {
-	return &IOMessage{Type: 0}
-}
-
-// type Disconnect IOMessage
-// type Connect IOMessage
-// type Heartbeat IOMessage
-// type Message IOMessage
-// type JSON IOMessage
-// type Event IOMessage
-// type ACK IOMessage
-// type Error IOMessage
-// type Noop IOMessage
 
 func NewDisconnect() *IOMessage {
 	return &IOMessage{Type: 0}
