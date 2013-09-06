@@ -62,24 +62,24 @@ func NewHeartbeat() *IOMessage {
 	return &IOMessage{Type: 2}
 }
 
-func NewMessage(endpoint *Endpoint, data string) *IOMessage {
-	return &IOMessage{Type: 3, Endpoint: endpoint, Data: data}
+func NewMessage(endpoint *Endpoint, msg string) *IOMessage {
+	return &IOMessage{Type: 3, Endpoint: endpoint, Data: msg}
 }
 
 func NewJSONMessage(endpoint *Endpoint, data string) *IOMessage {
 	return &IOMessage{Type: 4, Endpoint: endpoint, Data: data}
 }
 
-func NewEvent(endpoint *Endpoint, data string) *IOMessage {
-	return &IOMessage{Type: 5, Endpoint: endpoint, Data: data}
+func NewEvent(endpoint *Endpoint, name string, args string) *IOMessage {
+	return &IOMessage{Type: 5, Endpoint: endpoint, Data: args}
 }
 
-func NewACK(endpoint *Endpoint, data string) *IOMessage {
-	return &IOMessage{Type: 6, Endpoint: endpoint, Data: data}
+func NewACK(data string) *IOMessage {
+	return &IOMessage{Type: 6, Data: data}
 }
 
-func NewError(endpoint *Endpoint, data string) *IOMessage {
-	return &IOMessage{Type: 7, Endpoint: endpoint, Data: data}
+func NewError(endpoint *Endpoint, reason string, advice string) *IOMessage {
+	return &IOMessage{Type: 7, Endpoint: endpoint, Data: reason + advice}
 }
 
 func NewNoop() *IOMessage {
