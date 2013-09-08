@@ -6,8 +6,8 @@ import (
 )
 
 type Transport interface {
-	send(*Message) error
-	receive() (*Message, error)
+	Send(string) error
+	Receive() (string, error)
 }
 
 func NewTransport(session *Session, url string) (Transport, error) {
@@ -31,21 +31,16 @@ func NewWSTransport(session *Session, url string) (*WSTransport, error) {
 	return &WSTransport{ws}, nil
 }
 
-func (wsTransport *WSTransport) send(msg *Message) error {
-	return websocket.Message.Send(wsTransport.Conn, msg.String())
+func (wsTransport *WSTransport) Send(rawMsg string) error {
+	return websocket.Message.Send(wsTransport.Conn, rawMsg)
 }
 
-func (wsTransport *WSTransport) receive() (*Message, error) {
+func (wsTransport *WSTransport) Receive() (string, error) {
 	var rawMsg string
 	err := websocket.Message.Receive(wsTransport.Conn, &rawMsg)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	msg, err := ParseMessage(rawMsg)
-	if err != nil {
-		return nil, err
-	}
-
-	return msg, nil
+	return rawMsg, nil
 }

@@ -20,7 +20,7 @@ func DialAndConnect(url string, channel string, query string) (*Socket, error) {
 
 	endpoint := NewEndpoint(channel, query)
 	connectMsg := NewConnect(endpoint)
-	socket.Transport.send(connectMsg)
+	socket.Send(connectMsg)
 
 	return socket, nil
 }
@@ -41,7 +41,7 @@ func Dial(url string) (*Socket, error) {
 		heartbeatMsg := NewHeartbeat()
 		for {
 			time.Sleep(session.HeartbeatTimeout - time.Second)
-			transport.send(heartbeatMsg)
+			transport.Send(heartbeatMsg.String())
 		}
 	}()
 
@@ -49,9 +49,19 @@ func Dial(url string) (*Socket, error) {
 }
 
 func (socket *Socket) Receive() (*Message, error) {
-	return socket.Transport.receive()
+	rawMsg, err := socket.Transport.Receive()
+	if err != nil {
+		return nil, err
+	}
+
+	msg, err := ParseMessage(rawMsg)
+	if err != nil {
+		return nil, err
+	}
+
+	return msg, nil
 }
 
 func (socket *Socket) Send(msg *Message) error {
-	return socket.Transport.send(msg)
+	return socket.Transport.Send(msg.String())
 }
