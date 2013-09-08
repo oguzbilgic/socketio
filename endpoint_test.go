@@ -5,18 +5,6 @@ import (
 )
 
 func TestParseEndpoint(t *testing.T) {
-	endpoint := ParseEndpoint("")
-
-	if endpoint.Path != "" {
-		t.Errorf("Error")
-	}
-
-	if endpoint.Query != "" {
-		t.Errorf("Error")
-	}
-}
-
-func TestParseEndpoint2(t *testing.T) {
 	endpoint := ParseEndpoint("/channel")
 
 	if endpoint.Path != "/channel" {
@@ -28,14 +16,14 @@ func TestParseEndpoint2(t *testing.T) {
 	}
 }
 
-func TestParseEndpoint3(t *testing.T) {
-	endpoint := ParseEndpoint("/channel?Key=Val")
+func TestParseEndpointQuery(t *testing.T) {
+	endpoint := ParseEndpoint("/channel?key=value")
 
 	if endpoint.Path != "/channel" {
 		t.Errorf("Error")
 	}
 
-	if endpoint.Query != "Key=Val" {
+	if endpoint.Query != "key=value" {
 		t.Errorf("Error")
 	}
 }
