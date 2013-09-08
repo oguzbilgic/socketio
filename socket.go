@@ -13,7 +13,7 @@ type Socket struct {
 	Transport Transport
 }
 
-func Dial(url string, channel string) (*Socket, error) {
+func Dial(url string, channel string, query string) (*Socket, error) {
 	session, err := NewSession(url)
 	if err != nil {
 		return nil, err
@@ -25,7 +25,7 @@ func Dial(url string, channel string) (*Socket, error) {
 	}
 
 	// Connect
-	endpoint := NewEndpoint(channel, "")
+	endpoint := NewEndpoint(channel, query)
 	connectMsg := NewConnect(endpoint)
 	transport.send(connectMsg)
 
