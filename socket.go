@@ -39,10 +39,8 @@ func Dial(url string) (*Socket, error) {
 	// Heartbeat goroutine
 	go func() {
 		heartbeatMsg := NewHeartbeat()
-		heartbeatDuration := time.Duration(session.HeartbeatTimeout-1) * time.Second
-
 		for {
-			time.Sleep(heartbeatDuration)
+			time.Sleep(session.HeartbeatTimeout - time.Second)
 			transport.send(heartbeatMsg)
 		}
 	}()
