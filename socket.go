@@ -7,7 +7,7 @@ import (
 )
 
 type Socket struct {
-	Url       string
+	URL       string
 	Session   *Session
 	Transport Transport
 }
