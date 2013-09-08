@@ -45,3 +45,12 @@ func NewSession(url string) (*Session, error) {
 
 	return &Session{id, heartbeatTimeout, connectionTimeout, supportedProtocols}, nil
 }
+
+func (session *Session) SupportProtocol(protocol string) bool {
+	for _, supportedProtocol := range session.SupportedProtocols {
+		if protocol == supportedProtocol {
+			return true
+		}
+	}
+	return false
+}
