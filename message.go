@@ -13,6 +13,7 @@ type Message struct {
 	Data     string
 }
 
+// ParseMessages parses the given raw message in to Message.
 func ParseMessage(rawMsg string) (*Message, error) {
 	parts := strings.SplitN(rawMsg, ":", 4)
 
@@ -36,6 +37,7 @@ func ParseMessage(rawMsg string) (*Message, error) {
 	return &Message{msgType, id, endpoint, data}, nil
 }
 
+// String returns the string represenation of the Message.
 func (m Message) String() string {
 	raw := strconv.Itoa(m.Type)
 
@@ -53,14 +55,17 @@ func (m Message) String() string {
 	return raw
 }
 
+// NewDisconnect returns a new disconnect Message.
 func NewDisconnect() *Message {
 	return &Message{Type: 0}
 }
 
+// NewConnect returns a new connect Message for the given endpoint.
 func NewConnect(endpoint *Endpoint) *Message {
 	return &Message{Type: 1, Endpoint: endpoint}
 }
 
+// NewHeartbeat returns a new heartbeat Message.
 func NewHeartbeat() *Message {
 	return &Message{Type: 2}
 }
@@ -81,10 +86,13 @@ func NewACK(data string) *Message {
 	return &Message{Type: 6, Data: data}
 }
 
+// NewError returns a new error Message for the given endpoint with a
+// reason and an advice.
 func NewError(endpoint *Endpoint, reason string, advice string) *Message {
 	return &Message{Type: 7, Endpoint: endpoint, Data: reason + "+" + advice}
 }
 
+// NewNoop returns a new no-op Message.
 func NewNoop() *Message {
 	return &Message{Type: 8}
 }

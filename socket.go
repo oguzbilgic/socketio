@@ -12,6 +12,8 @@ type Socket struct {
 	Transport Transport
 }
 
+// Dial opens a new client connection to the socket.io server then connects
+// to the given channel.
 func DialAndConnect(url string, channel string, query string) (*Socket, error) {
 	socket, err := Dial(url)
 	if err != nil {
@@ -25,6 +27,8 @@ func DialAndConnect(url string, channel string, query string) (*Socket, error) {
 	return socket, nil
 }
 
+// Dial opens a new client connection to the socket.io server using one of
+// the implemented and supported Transports.
 func Dial(url string) (*Socket, error) {
 	session, err := NewSession(url)
 	if err != nil {
@@ -48,6 +52,8 @@ func Dial(url string) (*Socket, error) {
 	return &Socket{url, session, transport}, nil
 }
 
+// Receive receives the raw message from the underlying transport and
+// converts it to the Message type.
 func (socket *Socket) Receive() (*Message, error) {
 	rawMsg, err := socket.Transport.Receive()
 	if err != nil {
@@ -62,6 +68,8 @@ func (socket *Socket) Receive() (*Message, error) {
 	return msg, nil
 }
 
+// Send sends the given Message to the socket.io server using it's
+// underlying transport.
 func (socket *Socket) Send(msg *Message) error {
 	return socket.Transport.Send(msg.String())
 }

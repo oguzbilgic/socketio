@@ -5,11 +5,15 @@ import (
 	"errors"
 )
 
+// Transport is an interface for sending and receiving raw messages from
+// the socket.io server.
 type Transport interface {
 	Send(string) error
 	Receive() (string, error)
 }
 
+// NewTransport returns an implemented transport which is also supported
+// by the socket.io server.
 func NewTransport(session *Session, url string) (Transport, error) {
 	if session.SupportProtocol("websocket") {
 		return NewWSTransport(session, url)
@@ -18,6 +22,7 @@ func NewTransport(session *Session, url string) (Transport, error) {
 	return nil, errors.New("none of the implemented protocols are supported by the server ")
 }
 
+// WSTransport implements Transport interface for websocket protocol.
 type WSTransport struct {
 	Conn *websocket.Conn
 }

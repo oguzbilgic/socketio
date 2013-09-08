@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+// Session holds the configuration variables received from the socket.io
+// server.
 type Session struct {
 	ID                 string
 	HeartbeatTimeout   time.Duration
@@ -16,6 +18,8 @@ type Session struct {
 	SupportedProtocols []string
 }
 
+// NewSession receives the configuraiton variables from the socket.io
+// server.
 func NewSession(url string) (*Session, error) {
 	response, err := http.Get("http://" + url + "/socket.io/1")
 	if err != nil {
@@ -46,6 +50,8 @@ func NewSession(url string) (*Session, error) {
 	return &Session{id, heartbeatTimeout, connectionTimeout, supportedProtocols}, nil
 }
 
+// SupportProtocol checks if the given protocol is supported by the
+// socket.io server.
 func (session *Session) SupportProtocol(protocol string) bool {
 	for _, supportedProtocol := range session.SupportedProtocols {
 		if protocol == supportedProtocol {
