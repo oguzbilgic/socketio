@@ -6,11 +6,6 @@ import (
 	"time"
 )
 
-type Event struct {
-	Name string
-	Args interface{}
-}
-
 type Socket struct {
 	Url       string
 	Channel   string
