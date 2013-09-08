@@ -2,6 +2,7 @@ package socketio
 
 import (
 	"code.google.com/p/go.net/websocket"
+	"errors"
 )
 
 type Transport interface {
@@ -9,12 +10,19 @@ type Transport interface {
 	receive() (*Message, error)
 }
 
+func NewTransport(session *Session, url string) (Transport, error) {
+	if session.SupportProtocol("websocket") {
+		return NewWSTransport(session, url)
+	}
+
+	return nil, errors.New("none of the implemented protocols are supported by the server ")
+}
+
 type WSTransport struct {
 	Conn *websocket.Conn
 }
 
 func NewWSTransport(session *Session, url string) (*WSTransport, error) {
-	// Connect through websocket
 	ws, err := websocket.Dial("ws://"+url+"/socket.io/1/websocket/"+session.ID, "", "http://localhost/")
 	if err != nil {
 		return nil, err
