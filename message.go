@@ -13,24 +13,27 @@ type Message struct {
 	Data     string
 }
 
-func NewMessage(rawMsg string) (*Message, error) {
-	if len(rawMsg) == 0 {
+func ParseMessage(rawMsg string) (*Message, error) {
+	parts := strings.SplitN(rawMsg, ":", 4)
+
+	if len(parts) < 3 {
 		return nil, errors.New("Empty message")
 	}
 
-	msgType, err := strconv.Atoi(string(rawMsg[0]))
+	msgType, err := strconv.Atoi(parts[0])
 	if err != nil {
 		return nil, err
 	}
 
-	switch msgType {
-	case 3, 4, 5:
-		parts := strings.SplitN(rawMsg, ":", 4)
-		id := parts[1]
-		return &Message{msgType, id, nil, parts[3]}, nil
-	default:
-		return &Message{Type: msgType}, nil
+	id := parts[1]
+	endpoint := ParseEndpoint(parts[2])
+
+	data := ""
+	if len(parts) == 4 {
+		data = parts[3]
 	}
+
+	return &Message{msgType, id, endpoint, data}, nil
 }
 
 func (m Message) String() string {

@@ -34,7 +34,7 @@ func (wsTransport *WSTransport) receive() (*Message, error) {
 		return nil, err
 	}
 
-	msg, err := NewMessage(rawMsg)
+	msg, err := ParseMessage(rawMsg)
 	if err != nil {
 		return nil, err
 	}
