@@ -46,10 +46,10 @@ func Dial(url string, channel string) (*Socket, error) {
 	return &Socket{url, channel, session, transport}, nil
 }
 
-func (socket *Socket) Receive() (*IOMessage, error) {
+func (socket *Socket) Receive() (*Message, error) {
 	return socket.Transport.receive()
 }
 
-func (socket *Socket) Send(msg *IOMessage) error {
+func (socket *Socket) Send(msg *Message) error {
 	return socket.Transport.send(msg)
 }
