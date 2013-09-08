@@ -8,7 +8,7 @@ import (
 
 type Message struct {
 	Type     int
-	Id       string
+	ID       string
 	Endpoint *Endpoint
 	Data     string
 }
@@ -39,7 +39,7 @@ func ParseMessage(rawMsg string) (*Message, error) {
 func (m Message) String() string {
 	raw := strconv.Itoa(m.Type)
 
-	raw += ":" + m.Id
+	raw += ":" + m.ID
 
 	raw += ":"
 	if m.Endpoint != nil {
