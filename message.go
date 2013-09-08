@@ -82,7 +82,7 @@ func NewACK(data string) *Message {
 }
 
 func NewError(endpoint *Endpoint, reason string, advice string) *Message {
-	return &Message{Type: 7, Endpoint: endpoint, Data: reason + advice}
+	return &Message{Type: 7, Endpoint: endpoint, Data: reason + "+" + advice}
 }
 
 func NewNoop() *Message {
