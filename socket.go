@@ -19,7 +19,7 @@ func Dial(url string, channel string) (*Socket, error) {
 		return nil, err
 	}
 
-	transport, err := NewWSTransport(session, url, channel)
+	transport, err := NewWSTransport(session, url)
 	if err != nil {
 		return nil, err
 	}
