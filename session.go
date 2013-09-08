@@ -10,7 +10,7 @@ import (
 )
 
 type Session struct {
-	Id                 string
+	ID                 string
 	HeartbeatTimeout   time.Duration
 	ConnectionTimeout  time.Duration
 	SupportedProtocols []string

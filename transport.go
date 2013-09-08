@@ -15,7 +15,7 @@ type WSTransport struct {
 
 func NewWSTransport(session *Session, url string) (*WSTransport, error) {
 	// Connect through websocket
-	ws, err := websocket.Dial("ws://"+url+"/socket.io/1/websocket/"+session.Id, "", "http://localhost/")
+	ws, err := websocket.Dial("ws://"+url+"/socket.io/1/websocket/"+session.ID, "", "http://localhost/")
 	if err != nil {
 		return nil, err
 	}
