@@ -12,7 +12,20 @@ type Socket struct {
 	Transport Transport
 }
 
-func Dial(url string, channel string, query string) (*Socket, error) {
+func DialAndConnect(url string, channel string, query string) (*Socket, error) {
+	socket, err := Dial(url)
+	if err != nil {
+		return nil, err
+	}
+
+	endpoint := NewEndpoint(channel, query)
+	connectMsg := NewConnect(endpoint)
+	socket.Transport.send(connectMsg)
+
+	return socket, nil
+}
+
+func Dial(url string) (*Socket, error) {
 	session, err := NewSession(url)
 	if err != nil {
 		return nil, err
@@ -23,17 +36,14 @@ func Dial(url string, channel string, query string) (*Socket, error) {
 		return nil, err
 	}
 
-	// Connect
-	endpoint := NewEndpoint(channel, query)
-	connectMsg := NewConnect(endpoint)
-	transport.send(connectMsg)
-
 	// Heartbeat goroutine
 	go func() {
 		heartbeatMsg := NewHeartbeat()
+		heartbeatDuration := time.Duration(session.HeartbeatTimeout-1) * time.Second
+
 		for {
-			time.Sleep(time.Duration(session.HeartbeatTimeout-1) * time.Second)
-			_ = transport.send(heartbeatMsg)
+			time.Sleep(heartbeatDuration)
+			transport.send(heartbeatMsg)
 		}
 	}()
 
