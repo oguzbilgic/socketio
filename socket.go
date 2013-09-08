@@ -8,7 +8,6 @@ import (
 
 type Socket struct {
 	Url       string
-	Channel   string
 	Session   *Session
 	Transport Transport
 }
@@ -38,7 +37,7 @@ func Dial(url string, channel string, query string) (*Socket, error) {
 		}
 	}()
 
-	return &Socket{url, channel, session, transport}, nil
+	return &Socket{url, session, transport}, nil
 }
 
 func (socket *Socket) Receive() (*Message, error) {
