@@ -28,5 +28,8 @@ func ParseEndpoint(rawEndpoint string) *Endpoint {
 
 // String returns the string representation of the endpoint.
 func (e Endpoint) String() string {
-	return e.Path + "?" + e.Query
+	if e.Query != "" {
+		return e.Path + "?" + e.Query
+	}
+	return e.Path
 }
