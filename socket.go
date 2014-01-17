@@ -60,12 +60,7 @@ func (socket *Socket) Receive() (*Message, error) {
 		return nil, err
 	}
 
-	msg, err := ParseMessage(rawMsg)
-	if err != nil {
-		return nil, err
-	}
-
-	return msg, nil
+	return ParseMessage(rawMsg)
 }
 
 // Send sends the given Message to the socket.io server using it's
