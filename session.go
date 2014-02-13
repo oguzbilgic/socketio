@@ -21,7 +21,11 @@ type Session struct {
 // NewSession receives the configuraiton variables from the socket.io
 // server.
 func NewSession(url string) (*Session, error) {
-	response, err := http.Get("http://" + url + "/socket.io/1")
+	urlParser, err := NewUrlParser(url)
+	if err != nil {
+		return nil, err
+	}
+	response, err := http.Get(urlParser.Handshake())
 	if err != nil {
 		return nil, err
 	}
@@ -60,3 +64,4 @@ func (session *Session) SupportProtocol(protocol string) bool {
 	}
 	return false
 }
+

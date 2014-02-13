@@ -28,7 +28,11 @@ type WSTransport struct {
 }
 
 func NewWSTransport(session *Session, url string) (*WSTransport, error) {
-	ws, err := websocket.Dial("ws://"+url+"/socket.io/1/websocket/"+session.ID, "", "http://localhost/")
+	urlParser, err := NewUrlParser(url)
+	if err != nil {
+		return nil, err
+	}
+	ws, err := websocket.Dial(urlParser.Websocket(session.ID), "", "http://localhost/")
 	if err != nil {
 		return nil, err
 	}
