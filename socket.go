@@ -71,3 +71,8 @@ func (socket *Socket) Receive() (*Message, error) {
 func (socket *Socket) Send(msg *Message) error {
 	return socket.Transport.Send(msg.String())
 }
+
+// Close underlying transport
+func (socket *Socket) Close() error {
+	return socket.Transport.Close()
+}

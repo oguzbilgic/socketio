@@ -4,6 +4,7 @@ import (
 	"code.google.com/p/go.net/websocket"
 	"errors"
 	"time"
+	"io"
 )
 
 // Transport is an interface for sending and receiving raw messages from
@@ -11,6 +12,7 @@ import (
 type Transport interface {
 	Send(string) error
 	Receive() (string, error)
+	io.Closer
 }
 
 // NewTransport returns an implemented transport which is also supported
@@ -56,4 +58,8 @@ func (wsTransport *WSTransport) Receive() (string, error) {
 	}
 
 	return rawMsg, nil
+}
+
+func (wsTransport *WSTransport) Close() error { 
+	return wsTransport.Conn.Close()
 }
