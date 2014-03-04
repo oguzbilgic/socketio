@@ -6,23 +6,23 @@ import (
 
 func testHandshakeUrls(t *testing.T, rawUrls []string, expected string) {
 	for _, raw := range rawUrls {
-		u, err := NewUrlParser(raw)
+		u, err := newURLParser(raw)
 		if err != nil {
 			t.Errorf("NewUrl error:  %s", err)
 		}
-		if u.Handshake() != expected {
-			t.Errorf("Wrong handshake formatted url, expected: %s, actual: %s", expected, u.Handshake())
+		if u.handshake() != expected {
+			t.Errorf("Wrong handshake formatted url, expected: %s, actual: %s", expected, u.handshake())
 		}
 	}
 }
 
 func testWebsocketUrls(t *testing.T, rawUrls []string, expected string) {
 	for _, raw := range rawUrls {
-		u, err := NewUrlParser(raw)
+		u, err := newURLParser(raw)
 		if err != nil {
 			t.Errorf("NewUrl error:  %s", err)
 		}
-		ws := u.Websocket("session_id")
+		ws := u.websocket("session_id")
 		if ws != expected {
 			t.Errorf("Wrong websocket formatted url, expected: %s, actual: %s", expected, ws)
 		}

@@ -7,12 +7,12 @@ import (
 )
 
 // Parse raw url string and make valid handshake or websockets socket.io url.
-type UrlParser struct {
+type urlParser struct {
 	raw    string
 	parsed *url.URL
 }
 
-func NewUrlParser(raw string) (*UrlParser, error) {
+func newURLParser(raw string) (*urlParser, error) {
 	parsed, err := url.Parse(raw)
 	if err != nil {
 		return nil, err
@@ -20,14 +20,14 @@ func NewUrlParser(raw string) (*UrlParser, error) {
 	if parsed.Scheme == "" {
 		parsed.Scheme = "http"
 	}
-	return &UrlParser{raw: raw, parsed: parsed}, nil
+	return &urlParser{raw: raw, parsed: parsed}, nil
 }
 
-func (u *UrlParser) Handshake() string {
+func (u *urlParser) handshake() string {
 	return fmt.Sprintf("%s/socket.io/1", u.parsed.String())
 }
 
-func (u *UrlParser) Websocket(sessionId string) string {
+func (u *urlParser) websocket(sessionId string) string {
 	var host string
 	if u.parsed.Scheme == "https" {
 		host = strings.Replace(u.parsed.String(), "https://", "wss://", 1)

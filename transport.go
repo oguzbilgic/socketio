@@ -3,8 +3,8 @@ package socketio
 import (
 	"code.google.com/p/go.net/websocket"
 	"errors"
-	"time"
 	"io"
+	"time"
 )
 
 // Transport is an interface for sending and receiving raw messages from
@@ -27,20 +27,20 @@ func NewTransport(session *Session, url string) (Transport, error) {
 
 // WSTransport implements Transport interface for websocket protocol.
 type WSTransport struct {
-	Conn *websocket.Conn
+	Conn        *websocket.Conn
 	readTimeout time.Duration
 }
 
 func NewWSTransport(session *Session, url string) (*WSTransport, error) {
-	urlParser, err := NewUrlParser(url)
+	urlParser, err := newURLParser(url)
 	if err != nil {
 		return nil, err
 	}
-	ws, err := websocket.Dial(urlParser.Websocket(session.ID), "", "http://localhost/")
+	ws, err := websocket.Dial(urlParser.websocket(session.ID), "", "http://localhost/")
 	if err != nil {
 		return nil, err
 	}
-	//expect to receive message once in each HartbeatTimeout 
+	//expect to receive message once in each HartbeatTimeout
 	readTimeout := session.HeartbeatTimeout + time.Second
 	return &WSTransport{ws, readTimeout}, nil
 }
@@ -60,6 +60,6 @@ func (wsTransport *WSTransport) Receive() (string, error) {
 	return rawMsg, nil
 }
 
-func (wsTransport *WSTransport) Close() error { 
+func (wsTransport *WSTransport) Close() error {
 	return wsTransport.Conn.Close()
 }
