@@ -14,7 +14,7 @@ type Message struct {
 }
 
 // ParseMessages parses the given raw message in to Message.
-func ParseMessage(rawMsg string) (*Message, error) {
+func parseMessage(rawMsg string) (*Message, error) {
 	parts := strings.SplitN(rawMsg, ":", 4)
 
 	if len(parts) < 3 {
