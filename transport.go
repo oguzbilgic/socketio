@@ -19,19 +19,19 @@ type transport interface {
 // by the socket.io server.
 func newTransport(session *Session, url string) (transport, error) {
 	if session.SupportProtocol("websocket") {
-		return NewWSTransport(session, url)
+		return newWsTransport(session, url)
 	}
 
 	return nil, errors.New("none of the implemented protocols are supported by the server ")
 }
 
 // WSTransport implements Transport interface for websocket protocol.
-type WSTransport struct {
+type wsTransport struct {
 	Conn        *websocket.Conn
 	readTimeout time.Duration
 }
 
-func NewWSTransport(session *Session, url string) (*WSTransport, error) {
+func newWsTransport(session *Session, url string) (*wsTransport, error) {
 	urlParser, err := newURLParser(url)
 	if err != nil {
 		return nil, err
@@ -42,14 +42,14 @@ func NewWSTransport(session *Session, url string) (*WSTransport, error) {
 	}
 	//expect to receive message once in each HartbeatTimeout
 	readTimeout := session.HeartbeatTimeout + time.Second
-	return &WSTransport{ws, readTimeout}, nil
+	return &wsTransport{ws, readTimeout}, nil
 }
 
-func (wsTransport *WSTransport) Send(rawMsg string) error {
+func (wsTransport *wsTransport) Send(rawMsg string) error {
 	return websocket.Message.Send(wsTransport.Conn, rawMsg)
 }
 
-func (wsTransport *WSTransport) Receive() (string, error) {
+func (wsTransport *wsTransport) Receive() (string, error) {
 	var rawMsg string
 	wsTransport.Conn.SetReadDeadline(time.Now().Add(wsTransport.readTimeout))
 	err := websocket.Message.Receive(wsTransport.Conn, &rawMsg)
@@ -60,6 +60,6 @@ func (wsTransport *WSTransport) Receive() (string, error) {
 	return rawMsg, nil
 }
 
-func (wsTransport *WSTransport) Close() error {
+func (wsTransport *wsTransport) Close() error {
 	return wsTransport.Conn.Close()
 }
