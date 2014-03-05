@@ -9,7 +9,7 @@ import (
 
 // Transport is an interface for sending and receiving raw messages from
 // the socket.io server.
-type Transport interface {
+type transport interface {
 	Send(string) error
 	Receive() (string, error)
 	io.Closer
@@ -17,7 +17,7 @@ type Transport interface {
 
 // NewTransport returns an implemented transport which is also supported
 // by the socket.io server.
-func NewTransport(session *Session, url string) (Transport, error) {
+func newTransport(session *Session, url string) (transport, error) {
 	if session.SupportProtocol("websocket") {
 		return NewWSTransport(session, url)
 	}

@@ -9,7 +9,7 @@ import (
 type Socket struct {
 	URL       string
 	Session   *Session
-	Transport Transport
+	Transport transport
 }
 
 // Dial opens a new client connection to the socket.io server then connects
@@ -35,7 +35,7 @@ func Dial(url string) (*Socket, error) {
 		return nil, err
 	}
 
-	transport, err := NewTransport(session, url)
+	transport, err := newTransport(session, url)
 	if err != nil {
 		return nil, err
 	}
