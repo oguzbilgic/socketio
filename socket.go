@@ -63,7 +63,7 @@ func (socket *Socket) Receive() (*Message, error) {
 		return nil, err
 	}
 
-	return ParseMessage(rawMsg)
+	return parseMessage(rawMsg)
 }
 
 // Send sends the given Message to the socket.io server using it's

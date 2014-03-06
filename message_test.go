@@ -5,21 +5,21 @@ import (
 )
 
 func TestParseMessageInvalidType(t *testing.T) {
-	_, err := ParseMessage("a::")
+	_, err := parseMessage("a::")
 	if err == nil {
 		t.Errorf("Invaild message type was not detected")
 	}
 }
 
 func TestParseMessageShort(t *testing.T) {
-	_, err := ParseMessage("0:")
+	_, err := parseMessage("0:")
 	if err == nil {
 		t.Errorf("Invaild message was not detected")
 	}
 }
 
 func TestParseMessageData(t *testing.T) {
-	msg, _ := ParseMessage("4:::This is data")
+	msg, _ := parseMessage("4:::This is data")
 	if msg.Data != "This is data" {
 		t.Errorf("Message data was not parsed correctly")
 	}
