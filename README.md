@@ -1,4 +1,4 @@
-# Socket.IO
+# Socket.IO [![Build Status](https://travis-ci.org/oguzbilgic/socketio.png?branch=master)](https://travis-ci.org/oguzbilgic/socketio)
 
 Package socketio implements a client for SocketIO protocol in Go language as specified in 
 [socket.io-spec](https://github.com/LearnBoost/socket.io-spec)
